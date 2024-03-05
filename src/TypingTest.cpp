@@ -1,23 +1,26 @@
+// TypingTest.cpp
 #include "TypingTest.h"
+#include <ncurses.h>
 #include <iostream>
 #include <chrono>
-#include <ncurses.h>
 
 TypingTest::TypingTest() {}
 
 TypingTest::~TypingTest() {}
 
 void TypingTest::startTest() {
-    // Initialize ncurses
-    initscr();
-    curs_set(0); // Hide cursor
-
     // Generate random number of words to type (between 30 to 55)
-    int numWords = rand() % 21 + 30;
+    int numWords = rand() % 26 + 30;
     std::vector<std::string> targetWords = generateRandomWords(numWords);
 
     // Display instructions
-    displayInstructions(targetWords);
+    clear(); // Clear the screen
+    printw("Type the following words:\n");
+    for (const auto& word : targetWords) {
+        printw("%s ", word.c_str());
+    }
+    printw("\n");
+    refresh();
 
     // Start timer
     auto startTime = std::chrono::steady_clock::now();
@@ -41,20 +44,8 @@ void TypingTest::startTest() {
     printw("Time taken: %.2f seconds\n", elapsedTime);
     printw("Accuracy: %.2f%%\n", accuracy);
     printw("Words per minute: %.2f\n", wpm);
-
     refresh();
     getch(); // Wait for user to press any key before exiting
-
-    // End ncurses
-    endwin();
-}
-
-void TypingTest::displayInstructions(const std::vector<std::string>& targetWords) {
-    printw("Type the following words:\n");
-    for (const auto& word : targetWords) {
-        printw("%s ", word.c_str());
-    }
-    printw("\n");
 }
 
 std::vector<std::string> TypingTest::generateRandomWords(int count) {
@@ -91,7 +82,6 @@ std::vector<std::string> TypingTest::generateRandomWords(int count) {
 
     return words;
 }
-
 
 double TypingTest::calculateAccuracy(const std::string& original, const std::string& typed) {
     int correctChars = 0;
